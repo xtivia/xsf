@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	     xmlns="http://java.sun.com/xml/ns/j2ee" 
+	     xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
+	     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/j2ee/web-app_3_0.xsd" 
+	     version="3.0">
+
+ <!-- XSF Services Framework -->	
+  <servlet>
+	<servlet-name>delegate</servlet-name>
+	<servlet-class>com.liferay.portal.kernel.servlet.PortalDelegateServlet</servlet-class>
+	<init-param>
+	  <param-name>servlet-class</param-name>
+	  <param-value>org.springframework.web.servlet.DispatcherServlet</param-value>
+	</init-param>
+	<init-param>
+	  <param-name>sub-context</param-name>
+	  <param-value>xsf</param-value>
+	</init-param>
+	<init-param>
+	  <param-name>contextConfigLocation</param-name>
+	  <param-value>classpath:/META-INF/xsf-context.xml</param-value>
+	</init-param>       
+	<load-on-startup>1</load-on-startup>
+  </servlet>
+
+</web-app>

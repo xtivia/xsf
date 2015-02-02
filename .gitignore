@@ -1,0 +1,10 @@
+build.xml
+bin
+.project
+.classpath
+.metadata
+.settings
+*~
+target/
+.DS_Store
+._*

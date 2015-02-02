@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.xtivia.tools</groupId>
+	<artifactId>xsf_sample_app</artifactId>
+	<packaging>war</packaging>
+	<name>XSF Sample Application</name>
+	<version>0.1.0-SNAPSHOT</version>
+	
+	<properties>
+	    <liferay.version>6.2.10.8</liferay.version>
+	    <xsf.version>0.1.0-SNAPSHOT</xsf.version>
+        <java.version>1.7</java.version>
+        <junit.version>4.5</junit.version>
+        <mockito.version>1.9.5</mockito.version>
+	    <spring.version>4.1.2.RELEASE</spring.version>
+	    <slf4j.version>1.7.7</slf4j.version>
+	    <jackson.version>1.9.11</jackson.version>
+	</properties>	
+	
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<!-- XSF installation in local Maven repo -->
+			<plugin>
+		          <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-install-plugin</artifactId>
+                  <version>2.5.1</version>
+                  <configuration>
+                     <groupId>com.xtivia.tools</groupId>
+                     <artifactId>xsf</artifactId>
+                     <version>${xsf.version}</version>
+                     <packaging>jar</packaging>
+                     <file>${basedir}/dist/xsf-${xsf.version}.jar</file>
+                     <generatePom>true</generatePom>
+                  </configuration>
+                  <executions>
+                     <execution>
+                        <id>install-jar-lib</id>
+                        <goals>
+                           <goal>install-file</goal>
+                        </goals>
+                        <phase>validate</phase>
+                     </execution>
+                  </executions>
+              </plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+
+        <!-- XSF -->
+        <dependency>
+		   <groupId>com.xtivia.tools</groupId>
+		   <artifactId>xsf</artifactId>
+		   <version>${xsf.version}</version>
+        </dependency> 
+	
+	    <!--Liferay-->
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>portal-service</artifactId>
+			<version>${liferay.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.portlet</groupId>
+			<artifactId>portlet-api</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- J2EE -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+		
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				 </exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc-portlet</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		
+		<!-- cglib/asm -->
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>asm</groupId>
+			<artifactId>asm-all</artifactId>
+			<version>2.2</version>
+		</dependency>
+		
+		<!-- Apache Commons -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- JSON -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		
+		<!--Testing-->
+		<dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+	        <groupId>org.mockito</groupId>
+	        <artifactId>mockito-all</artifactId>
+	        <version>${mockito.version}</version>
+	        <scope>test</scope>
+        </dependency>
+        
+	</dependencies>
+	
+</project>
