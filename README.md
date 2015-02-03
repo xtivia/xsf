@@ -18,11 +18,24 @@ In terms of development goals for XSF, there were several key goals for the fram
 
 **Setup and Deployment**
 
-XSF is licensed via LGPL so that you can use it freely in developing your own Liferay application services.
+XSF is licensed via LGPL so that you can use it freely in developing
+your own Liferay application services.
 
-The XSF distribution is a Maven project that builds a sample application (WAR) using XSF. It requires that you have Maven installed on your development system, as well as having downloaded and installed the Liferay Maven artifacts for your particular target version of Liferay (*see* [*https://www.liferay.com/documentation/liferay-portal/6.1/development/-/ai/installing-required-liferay-artifacts*](https://www.liferay.com/documentation/liferay-portal/6.1/development/-/ai/installing-required-liferay-artifacts)).
+The XSF distribution is a Maven project that builds a sample application
+(WAR) using XSF. It requires that you have Maven installed on your 
+development system, as well as having downloaded and installed the Liferay
+Maven artifacts for your particular target version of Liferay
+(*see* [*https://www.liferay.com/documentation/liferay-portal/6.1/development/-/ai/installing-required-liferay-artifacts*](https://www.liferay.com/documentation/liferay-portal/6.1/development/-/ai/installing-required-liferay-artifacts)).
 
-The distribution includes the XSF framework (as a JAR in the *dist* subdirectory) as well as some sample implementations of REST services based on the framework (which we will review below and in subsequent articles). By default the distributed POM installs the XSF JAR into your local Maven repository, but you can adjust this to install it into another repository if you prefer.
+The distribution includes the XSF framework (as a JAR in the *dist* 
+subdirectory) as well as some sample implementations of REST services based
+on the framework (which we will review below and in subsequent articles). 
+By default the distributed POM installs the XSF JAR into your local Maven
+repository, but you can adjust this to install it into another repository
+if you prefer.
+
+**Note that you must execute 'mvn validate' once to trigger this JAR 
+installation prior to actually performing a build.**
 
 Prior to performing a build you will also need to adjust the *liferay.version* property in the POM to point to the version of your installed Liferay Maven artifacts. Once you have configured this property value in the POM, then building new REST services is as simple as creating Java classes, annotating them with XSF-based annotations, and executing *mvn package* to create a WAR file. You can then move the created WAR into into your Liferay server's *deploy* directory.
 
