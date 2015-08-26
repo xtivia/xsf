@@ -39,7 +39,7 @@ import com.xtivia.xsf.samples.model.SampleOutput;
  */
 
 @Component("helloCommand3")
-@Route(uri="/hello/world3/{id}", method="POST", 
+@Route(uri="/hello/world3/{id}", method="POST", authenticated=false,
        inputKey="inputData", inputClass="com.xtivia.xsf.samples.model.SampleInput")
 
 public class HelloWorldCommand3 implements ICommand {

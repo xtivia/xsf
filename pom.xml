@@ -9,11 +9,12 @@
 	<artifactId>xsf_sample_app</artifactId>
 	<packaging>war</packaging>
 	<name>XSF Sample Application</name>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	
 	<properties>
-	    <liferay.version>6.2.10.8</liferay.version>
-	    <xsf.version>0.1.0-SNAPSHOT</xsf.version>
+	    <liferay.version>6.2.3</liferay.version>
+        <liferay.home>/home/mfreeman/apps/liferayce</liferay.home>
+	    <xsf.version>1.0.0-SNAPSHOT</xsf.version>
         <java.version>1.7</java.version>
         <junit.version>4.5</junit.version>
         <mockito.version>1.9.5</mockito.version>
@@ -22,7 +23,16 @@
 	    <jackson.version>1.9.11</jackson.version>
 	</properties>	
 	
+    <repositories>
+        <repository>
+          <id>XSFRepo</id>
+          <name>XSFRepo</name>
+          <url>file://${project.basedir}/xsf_repo</url>
+        </repository>
+    </repositories> 
+      
 	<build>
+        <finalName>xsf-sample-portlet</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -40,29 +50,34 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-			<!-- XSF installation in local Maven repo -->
-			<plugin>
-		          <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-install-plugin</artifactId>
-                  <version>2.5.1</version>
-                  <configuration>
-                     <groupId>com.xtivia.tools</groupId>
-                     <artifactId>xsf</artifactId>
-                     <version>${xsf.version}</version>
-                     <packaging>jar</packaging>
-                     <file>${basedir}/dist/xsf-${xsf.version}.jar</file>
-                     <generatePom>true</generatePom>
-                  </configuration>
-                  <executions>
-                     <execution>
-                        <id>install-jar-lib</id>
-                        <goals>
-                           <goal>install-file</goal>
-                        </goals>
-                        <phase>validate</phase>
-                     </execution>
-                  </executions>
-              </plugin>
+            <!-- Disable standard Maven deployment in lieu of our Ant-based approach -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+			<!-- Custom Ant-based deploy/copy of WAR file-->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <tasks>
+                                <copy todir="${liferay.home}/deploy">
+                                    <fileset dir="${project.build.directory}">
+                                        <include name="**/*.war"/>
+                                    </fileset>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals><goal>run</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 

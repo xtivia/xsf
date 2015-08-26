@@ -22,12 +22,14 @@
 	   
   <context:annotation-config />
   
-  <context:component-scan base-package="com.xtivia.xsf.core,com.xtivia.xsf.samples" />
-  
+  <context:component-scan base-package="com.xtivia.xsf" />
+
   <bean id="marshaller" class="com.xtivia.xsf.core.web.DefaultMarshaller">
-     <property name="logInOut" value="true"/>
+        <property name="logInOut" value="true"/>
   </bean>
-  
-  <bean id="router" class="com.xtivia.xsf.core.web.DefaultRouter"/>  
+
+  <bean id="router" class="com.xtivia.xsf.core.web.DefaultRouter"/>
+
+  <bean id="xsf_services_controller" class="com.xtivia.xsf.liferay.LiferayServicesController"/>
   
 </beans>

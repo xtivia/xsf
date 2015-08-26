@@ -28,9 +28,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.liferay.portal.model.User;
+import com.xtivia.xsf.core.commands.CommandContext;
 import com.xtivia.xsf.core.commands.CommandResult;
-import com.xtivia.xsf.core.commands.ICommandKeys;
-import com.xtivia.xsf.core.util.CommandContext;
+import com.xtivia.xsf.liferay.ILiferayCommandKeys;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class HelloWorldCommand2Test {
@@ -121,7 +122,7 @@ public class HelloWorldCommand2Test {
 		context.put("first", "Joe");
 		context.put("last", "Bloggs");
 		Mockito.when(mockLiferayUser.getEmailAddress()).thenReturn("xsf@xtivia.com");
-		context.put(ICommandKeys.LIFERAY_USER, mockLiferayUser);
+		context.put(ILiferayCommandKeys.LIFERAY_USER, mockLiferayUser);
 		CommandResult cr = command.execute(context);
 		assertEquals(cr.isSucceeded(),true);
 		Map results = (Map) cr.getData();

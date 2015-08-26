@@ -27,7 +27,7 @@ import com.xtivia.xsf.core.commands.ICommand;
 import com.xtivia.xsf.core.commands.IContext;
 
 @Component("helloCommand")
-@Route(uri="/hello/world/{last}/{first}", method="GET")
+@Route(uri="/hello/world/{last}/{first}", method="GET", authenticated=false)
 public class HelloWorldCommand implements ICommand {
 
 	@Override

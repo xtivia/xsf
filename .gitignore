@@ -8,3 +8,5 @@ bin
 target/
 .DS_Store
 ._*
+/nbactions.xml
+/nb-configuration.xml

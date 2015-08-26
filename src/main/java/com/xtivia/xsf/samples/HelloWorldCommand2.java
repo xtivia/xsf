@@ -10,11 +10,11 @@ import com.liferay.portal.model.User;
 import com.xtivia.xsf.core.annotation.Route;
 import com.xtivia.xsf.core.commands.CommandResult;
 import com.xtivia.xsf.core.commands.ICommand;
-import com.xtivia.xsf.core.commands.ICommandKeys;
 import com.xtivia.xsf.core.commands.IContext;
+import com.xtivia.xsf.liferay.ILiferayCommandKeys;
 
 @Component("helloCommand2")
-@Route(uri="/hello/world2/{last}/{first}", method="GET")
+@Route(uri="/hello/world2/{last}/{first}", method="GET",authenticated=false)
 public class HelloWorldCommand2 implements ICommand {
 
 	@Override
@@ -39,7 +39,7 @@ public class HelloWorldCommand2 implements ICommand {
 		}
 		
 		//input based on logged-in Liferay user
-		User user = context.find(ICommandKeys.LIFERAY_USER);
+		User user = context.find(ILiferayCommandKeys.LIFERAY_USER);
 		data.put("user_email", "Not authenticated");
 		if (user != null) {
 			data.put("user_email", user.getEmailAddress());

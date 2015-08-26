@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>/home/mfreeman/git/xtivia/xsf/.authorizing_xsf_services.md.html</title>
+
+<link href="file:///home/mfreeman/Documents/MHF/markdown.css" media="all" rel="stylesheet" type="text/css"/> 
+
+
+
+<script type="text/javascript">
+
+function getDocumentScrollTop() 
+{
+   var res = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset || 0;
+   // alert(res);
+   return res;
+}
+
+function setDocumentScrollTop(ypos) 
+{
+	window.scrollTo(0, ypos);
+}
+
+</script>
+
+
+</head>
+<body class="markdown-body">
+<p>XSF is fully integrated with the Liferay authentication/authorization system. What this means to you as a services developer is that you can access information about the currently logged-in Liferay user from within your REST services, and you can also leverage mechanisms that allow you to create access control rules for services.</p> 
+<h3> <a id="user-content-xsf-service-authentication-and-authorization-mechanisms" class="anchor" href="#xsf-service-authentication-and-authorization-mechanisms" aria-hidden="true"><span class="octicon octicon-link"></span></a>XSF Service Authentication and Authorization Mechanisms</h3> 
+<p>In its simplest form an XSF command is marked as requiring authentication via the <em>authenticated</em> attribute on the @Route annotation attached to it. The default value for this attribute is TRUE which means that by default each command that you create will require that the user be logged in to Liferay in order to access it. Commands that are intended to be used as public/guest routes should have this value set to FALSE (as can be seen in the &quot;HelloWorld&quot; commands provided in <em>com.xtivia.xsf.samples</em>.</p> 
+<p>Commands can indicate to XSF that they require some type of customized authorization by implementing the <em>IAuthorized</em> interface. This interface requires the implementation of a single method, <em>getAuthorizers()</em>, that must return a List of objects that implement the <em>IAuthorizer</em> interface.</p> 
+<p>So essentially if a command implements the <em>IAuthorized</em> interface it is indicating to the XSF framework &quot;yes, I require some customized authorization before I can be accessed&quot;, and the command is responsible for providing a list of objects to the XSF framework that will perform the required authorization. When XSF determines that an inbound request would normally be routed to the command, it will first invoke the provided list of authorizers, and every one of the supplied authorizers must &quot;pass&quot; (return TRUE) before XSF will allow invocation of the command to proceed.</p> 
+<p>Each authorizer class must implement the <em>IAuthorizer</em> interface. This interface again has only a single method, <em>authorize()</em>, which the XSF framework will invoke, that takes two parameters: (1) an AuthorizationContext object and (2) the standard CommandContext (<em>IContext</em>). Obviously these authorizers can be reused across multiple commands, so in practice one potentially only has to implement a few custom authorizer classes.</p> 
+<h3> <a id="user-content-the-authorization-context" class="anchor" href="#the-authorization-context" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Authorization Context</h3> 
+<p>The AuthorizationContext provides information that custom authorizers can use to implement whatever unique access control requirements that they require. This context provides a few basic properties related to the command about to be invoked (URI, Route object, etc.) but its real power comes from the fact that it implements the <em>Map</em> interface and thus can be used (similarly to the <em>IContext</em> interface used for functional data) to access a variety of implementation-specific values, via its <em>find()</em> method.</p> 
+<h3> <a id="user-content-authorizer-examples" class="anchor" href="#authorizer-examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Authorizer Examples</h3> 
+<p>One of the challenges that makes providing tools for authorization more difficult than those that are provided for standard command processing (e.g., the @Route annotation) is that it is difficult to provide information to be used in an authorizer at compile time, thus the use of annotation-style processing is largely precluded. As an example, restricting access to a service based on a user's role in a particular organization would require the ID of the target organization, which would not be known at compile time.</p> 
+<p>An exception to this is implementing an authorization check that requires that the logged-in user have access to a particular portal-scoped (regular) role before accessing a particular command. Portal roles <em>can</em> be checked at run-time using the name value for the role, so as a result XSF is able to provide an <em>@PortalRole</em> annotation which can be attached to a command class to indicate that a particular role is required. In a similar fashion XSF provides an <em>@OmniAdmin</em> annotation which can be attached to a command class to indicate that the invoking user must be a portal administrator in order to access the command. For examples of the use of these annotations please refer to <em>OmniadminCommand.java</em> and <em>RoleRequiredCommand.java</em>, both of which can be found in the <em>com.xtivia.xsf.samples.auth</em> package.</p> 
+<p>Finally, to demonstrate an example of a completely custom authorization scheme XSF provides a sample in the <em>OrgAuthorizedCommand</em> and <em>OrgAuthorizer</em> classes, also both located in the <em>com.xtivia.xsf.samples.auth</em> package. These two classes implement a scenario where the authorizer loops through all of the organizations that the logged in user belongs to and checks to see if the user has the VIEW permission for Blogs assigned to him/her via a role in any of those organizations. This is admittedly a contrived example but it serves to demonstrate how one can implement a completely custom authorization algorithm for XSF services.</p> 
+<p>One key feature to notice in this custom implementation (see line 33 in <em>OrgAuthorizer.java</em>) is the use of a Liferay PermissionChecker object that is made available by XSF to custom authorizers via the AuthorizationContext. XSF will create (as needed) a reusable PermissionChecker that can be used to perform any necessary checks based on the Liferay permissions model. The currently logged in user (or null) is also made available as seen in line 29 of this same file. Having access to both the Liferay User object as well as to a PermissionChecker object enables the same level of rich access control for services that is normally implemented during the rendering of portlet pages.</p>
+</body>
+</html>

@@ -1,28 +1,24 @@
-<?xml version="1.0"?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	     xmlns="http://java.sun.com/xml/ns/j2ee" 
-	     xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" 
-	     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/j2ee/web-app_3_0.xsd" 
-	     version="3.0">
-
- <!-- XSF Services Framework -->	
+         xmlns="http://java.sun.com/xml/ns/j2ee" 
+         xmlns:javaee="http://java.sun.com/xml/ns/javaee" 
+         xmlns:web="http://java.sun.com/xml/ns/javaee" 
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/j2ee/web-app_3_0.xsd" version="3.0">
   <servlet>
-	<servlet-name>delegate</servlet-name>
-	<servlet-class>com.liferay.portal.kernel.servlet.PortalDelegateServlet</servlet-class>
-	<init-param>
-	  <param-name>servlet-class</param-name>
-	  <param-value>org.springframework.web.servlet.DispatcherServlet</param-value>
-	</init-param>
-	<init-param>
-	  <param-name>sub-context</param-name>
-	  <param-value>xsf</param-value>
-	</init-param>
-	<init-param>
-	  <param-name>contextConfigLocation</param-name>
-	  <param-value>classpath:/META-INF/xsf-context.xml</param-value>
-	</init-param>       
-	<load-on-startup>1</load-on-startup>
+    <servlet-name>delegate</servlet-name>
+    <servlet-class>com.liferay.portal.kernel.servlet.PortalDelegateServlet</servlet-class>
+    <init-param>
+      <javaee:param-name>servlet-class</javaee:param-name>
+      <javaee:param-value>org.springframework.web.servlet.DispatcherServlet</javaee:param-value>
+    </init-param>
+    <init-param>
+      <javaee:param-name>sub-context</javaee:param-name>
+      <javaee:param-value>xsf</javaee:param-value>
+    </init-param>
+    <init-param>
+      <javaee:param-name>contextConfigLocation</javaee:param-name>
+      <javaee:param-value>classpath:/META-INF/xsf-context.xml</javaee:param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
   </servlet>
-
 </web-app>

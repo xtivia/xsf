@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>/home/mfreeman/git/xtivia/xsf/.developing_xsf_services.md.html</title>
+
+<link href="file:///home/mfreeman/Documents/MHF/markdown.css" media="all" rel="stylesheet" type="text/css"/> 
+
+
+
+<script type="text/javascript">
+
+function getDocumentScrollTop() 
+{
+   var res = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset || 0;
+   // alert(res);
+   return res;
+}
+
+function setDocumentScrollTop(ypos) 
+{
+	window.scrollTo(0, ypos);
+}
+
+</script>
+
+
+</head>
+<body class="markdown-body">
+<h3> <a id="user-content-hello-world-in-xsf" class="anchor" href="#hello-world-in-xsf" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hello World in XSF</h3> 
+<p>We will review developing some simple &quot;Hello World&quot; style REST services using XSF. The examples we will discuss are provided as samples in the XSF distribution (located in the <em>com.xtivia.xsf.samples</em> package). For our first service we will build a simple echo-style service that accepts path parameters from URI segments and returns a simple object to 'echo' those inputs.</p> 
+<p>Once XSF has been installed in your development environment (see above) developing a new REST service is as simple as creating a Java class, implementing a single method within that class, and then adding an annotation to the class to configure the routing information for the service. XSF is built using the Spring framework so each command should also be created as a named Spring bean, which we accomplish via the use of the @Component annotation.</p> 
+<p>XSF uses the well-known &quot;command&quot; design pattern. Each endpoint/service should be implemented in a class that implements the <em>ICommand</em> interface, an interface that contains a single method named <em>execute()</em>. </p> 
+<p>The <em>execute</em>() method accepts a single &quot;context&quot; parameter that provides access to inputs needed by the command (path parameters, session parameters, query parameters, etc.) and must return an instance of a <em>CommandResult</em> object. We will have more to say on the context object later in this article, but for now think of it as a &quot;door&quot; to the execution environment of the command; at runtime this environment is provided by XSF itself, but it can easily be populated by unit tests to fully exercise the functions and error-handing of the command itself.</p> 
+<p>A <em>CommandResult</em> object contains three fields:</p> 
+<ul> 
+ <li><p>A <em>succeeded</em> (boolean) field indicating whether or not the execution of the command succeeded</p></li> 
+ <li><p>A <em>message</em> (String) field that can be used to supply more information when the command fails</p></li> 
+ <li><p>A <em>data</em> (Object) field that contains the returned Java object (payload). XSF will marshal the entire <em>CommandResult</em> into JSON, including the contents of the <em>data</em> field. XSF uses the Jackson library for JSON marshalling; the recommended approach is to use simple value objects for marshalling information to/from the service.</p></li> 
+</ul> 
+<p>So with the information above as a backdrop we can now begin the construction of our echo service. Listing 1 below provides the implementation of this service, which is provided in the XSF distribution in <em>com.xtivia.xsf.samples.HelloWorldCommand</em>. This service is invoked with a URL that looks something like <em>http://localhost:8080/delegate/xsf/hello/world/Bloggs/Joe</em>, where the last two path segments represent a last name and first name respectively.</p> 
+<div class="highlight highlight-java">
+ <pre>    <span class="pl-k">package</span> <span class="pl-smi">com.xtivia.xsf.samples</span>;
+    [imports omitted <span class="pl-k">for</span> brevity]
+
+    @Component(<span class="pl-s"><span class="pl-pds">&quot;</span>helloCommand<span class="pl-pds">&quot;</span></span>)
+    @Route(uri<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>/hello/world/{last}/{first}<span class="pl-pds">&quot;</span></span>, method<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>GET<span class="pl-pds">&quot;</span></span>)
+
+    <span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">HelloWorldCommand</span> <span class="pl-k">implements</span> <span class="pl-e">ICommand</span> {
+
+      <span class="pl-k">@Override</span>
+      <span class="pl-k">public</span> <span class="pl-smi">CommandResult</span> <span class="pl-en">execute</span>(<span class="pl-smi">IContext</span> <span class="pl-v">context</span>) {
+        <span class="pl-k">Map&lt;<span class="pl-smi">String</span>,<span class="pl-smi">String</span>&gt;</span> data <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-k">HashMap&lt;<span class="pl-smi">String</span>,<span class="pl-smi">String</span>&gt;</span>();
+
+        <span class="pl-c">//inputs from path parameters</span>
+        <span class="pl-smi">String</span> firstName <span class="pl-k">=</span> context<span class="pl-k">.</span>find(<span class="pl-s"><span class="pl-pds">&quot;</span>first<span class="pl-pds">&quot;</span></span>);
+        <span class="pl-smi">String</span> lastName <span class="pl-k">=</span> context<span class="pl-k">.</span>find(<span class="pl-s"><span class="pl-pds">&quot;</span>last<span class="pl-pds">&quot;</span></span>);
+        data<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">&quot;</span>first_name<span class="pl-pds">&quot;</span></span>, firstName);
+        data<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">&quot;</span>last_name<span class="pl-pds">&quot;</span></span>, lastName);
+        <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-smi">CommandResult</span>()<span class="pl-k">.</span>setSucceeded(<span class="pl-c1">true</span>)<span class="pl-k">.</span>setData(data)<span class="pl-k">.</span>setMessage(<span class="pl-s"><span class="pl-pds">&quot;</span><span class="pl-pds">&quot;</span></span>);
+      }
+    }</pre>
+</div> 
+<p><strong>Listing 1, HelloWorldCommand.java</strong></p> 
+<p>Let's first examine the @Route annotation at the top of the class. You will see that the <em>uri</em> value in this annotation describes the 'route' that is used to invoke this command. It does not include the host information, nor does it include the <em>/delegate/xsf</em> portion of the full URI. For now consider those portions of the overall URI as fixed; we will provide more information about the <em>/delegate/xsf</em> portion of the URI in a subsequent article.</p> 
+<p>Also note that the route definition indicates that the last two segments of the URI are the path parameters, namely <em>last</em> and <em>first</em>. XSF will route any inbound request that matches this URI to this command, and further, XSF will parse the URI for these parameters and make them available to the command's <em>execute()</em> method via the supplied context parameter.</p> 
+<p>We can see our command/service accessing these parameters in the first two statements of the <em>execute()</em> method. Invocations are made to the <em>find()</em> method of the supplied context; <em>find()</em> is a typesafe generic method that will return a value of matching type, or null if a value cannot be found (or is not null but does not match the requested type). You can think of the context as a specialized implementation of the <em>Map</em> interface that proxies information from the request, session, parameters and overall Liferay execution environment.</p> 
+<p>Finally our command needs to construct an object to return as output from the service. In this case we will use a simple <em>HashMap</em> object; in subsequent examples we will demonstrate how to return custom Java objects from our services. In all cases our commands only need to set the desired return object into the <em>data</em> field of a <em>CommandResult</em> object and XSF will handle the marshalling to JSON!</p> 
+<p>We simply insert the values we originally received as inputs (with error handling intentionally not present for brevity) into our output object, set this object into the <em>data</em> field of the <em>CommandResult</em> object and then set the <em>succeeded</em> flag to true before exiting the method. And we're done!</p> 
+<p>Now if we invoke our service using something like <em>curl</em> or a REST testing tool (or even the browser in this case since this service is invoked via GET) with the URL <em>http://localhost:8080/delegate/xsf/hello/world/Bloggs/Joe</em> we will receive the JSON shown in Listing 2 as our output.</p> 
+<div class="highlight highlight-json">
+ <pre>    {
+          <span class="pl-s"><span class="pl-pds">&quot;</span>succeeded<span class="pl-pds">&quot;</span></span>:<span class="pl-c1">true</span>,
+          <span class="pl-s"><span class="pl-pds">&quot;</span>data<span class="pl-pds">&quot;</span></span> : {<span class="pl-s"><span class="pl-pds">&quot;</span>first_name<span class="pl-pds">&quot;</span></span>:<span class="pl-s"><span class="pl-pds">&quot;</span>Joe<span class="pl-pds">&quot;</span></span>, <span class="pl-s"><span class="pl-pds">&quot;</span>last_name<span class="pl-pds">&quot;</span></span>:<span class="pl-s"><span class="pl-pds">&quot;</span>Bloggs<span class="pl-pds">&quot;</span></span>},
+          <span class="pl-s"><span class="pl-pds">&quot;</span>message<span class="pl-pds">&quot;</span></span>: <span class="pl-s"><span class="pl-pds">&quot;</span><span class="pl-pds">&quot;</span></span>
+    }</pre>
+</div> 
+<p><strong>Listing 2, JSON returned from invocation of HelloWorldCommand</strong></p> 
+<p><strong>Hello World, Part 2</strong></p> 
+<p>A slightly more enhanced version of our service is provided in <em>com.xtivia.xsf.samples.HelloWorldCommand2</em> shown in Listing 3 below (and included in the XSF distribution). This command example is very similar to our first one both in terms of route definition and implementation, but demonstrates a couple of additional features of XSF in code we add near the end of its <em>execute()</em> method.</p> 
+<p>Code has been added to demonstrate retrieving query parameters from the request; note that the technique is the same as before in terms of interrogating the supplied context for the desired parameter. So our code does not need to worry with boilerplate logic to retrieve path parameters vs. request query parameters; instead this is all handled by XSF and made available to services/commands via the supplied context. This also has the additional benefit of making commands easy to test; the unit tests can easily mock values for testing and place them into an input context – the context object supports all of the 'write' methods for a Map as well.</p> 
+<p>In our case the code tests for the presence of a query parameter named <em>mname</em> and if it found echoes the value back in the return object. If the query parameter was not supplied on the request a default value is returned instead.</p> 
+<div class="highlight highlight-java">
+ <pre>    @Component(<span class="pl-s"><span class="pl-pds">&quot;</span>helloCommand2<span class="pl-pds">&quot;</span></span>)
+    @Route(uri<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>/hello/world2/{last}/{first}<span class="pl-pds">&quot;</span></span>, method<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>GET<span class="pl-pds">&quot;</span></span>)
+
+    <span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">HelloWorldCommand2</span> <span class="pl-k">implements</span> <span class="pl-e">ICommand</span> {
+        <span class="pl-k">@Override</span>
+        <span class="pl-k">public</span> <span class="pl-smi">CommandResult</span> <span class="pl-en">execute</span>(<span class="pl-smi">IContext</span> <span class="pl-v">context</span>) {
+            <span class="pl-k">Map&lt;<span class="pl-smi">String</span>,<span class="pl-smi">String</span>&gt;</span> data <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-k">HashMap&lt;<span class="pl-smi">String</span>,<span class="pl-smi">String</span>&gt;</span>();
+
+            <span class="pl-c">//inputs from path parameters</span>
+            <span class="pl-smi">String</span> firstName <span class="pl-k">=</span> context<span class="pl-k">.</span>find(<span class="pl-s"><span class="pl-pds">&quot;</span>first<span class="pl-pds">&quot;</span></span>);
+            <span class="pl-smi">Validate</span><span class="pl-k">.</span>notNull(firstName,<span class="pl-s"><span class="pl-pds">&quot;</span>Required path param=firstName not found<span class="pl-pds">&quot;</span></span>);
+            <span class="pl-smi">String</span> lastName <span class="pl-k">=</span> context<span class="pl-k">.</span>find(<span class="pl-s"><span class="pl-pds">&quot;</span>last<span class="pl-pds">&quot;</span></span>);
+            <span class="pl-smi">Validate</span><span class="pl-k">.</span>notNull(lastName,<span class="pl-s"><span class="pl-pds">&quot;</span>Required path param=lastName not found<span class="pl-pds">&quot;</span></span>);
+            data<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">&quot;</span>first_name<span class="pl-pds">&quot;</span></span>, firstName);
+            data<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">&quot;</span>last_name<span class="pl-pds">&quot;</span></span>, lastName);
+
+            <span class="pl-c">// optional input from query string</span>
+            data<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">&quot;</span>middle_name<span class="pl-pds">&quot;</span></span>, <span class="pl-s"><span class="pl-pds">&quot;</span>NMN<span class="pl-pds">&quot;</span></span>);
+            <span class="pl-smi">String</span> middleName <span class="pl-k">=</span> context<span class="pl-k">.</span>find(<span class="pl-s"><span class="pl-pds">&quot;</span>mname<span class="pl-pds">&quot;</span></span>);
+            <span class="pl-k">if</span> (middleName <span class="pl-k">!=</span> <span class="pl-c1">null</span>) {
+                data<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">&quot;</span>middle_name<span class="pl-pds">&quot;</span></span>, middleName);
+            }
+
+           <span class="pl-c">//input based on logged-in Liferay user</span>
+           <span class="pl-smi">User</span> user <span class="pl-k">=</span> context<span class="pl-k">.</span>find(<span class="pl-smi">ICommandKeys</span><span class="pl-c1"><span class="pl-k">.</span>LIFERAY_USER</span>);
+           data<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">&quot;</span>user_email<span class="pl-pds">&quot;</span></span>, <span class="pl-s"><span class="pl-pds">&quot;</span>Not authenticated<span class="pl-pds">&quot;</span></span>);
+           <span class="pl-k">if</span> (user <span class="pl-k">!=</span> <span class="pl-c1">null</span>) {
+               data<span class="pl-k">.</span>put(<span class="pl-s"><span class="pl-pds">&quot;</span>user_email<span class="pl-pds">&quot;</span></span>, user<span class="pl-k">.</span>getEmailAddress());
+           }
+
+           <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-smi">CommandResult</span>()<span class="pl-k">.</span>setSucceeded(<span class="pl-c1">true</span>)<span class="pl-k">.</span>setData(data)<span class="pl-k">.</span>setMessage(<span class="pl-s"><span class="pl-pds">&quot;</span><span class="pl-pds">&quot;</span></span>);
+        }
+    }</pre>
+</div> 
+<p><strong>Listing 3, HelloWorldCommand2.java</strong></p> 
+<p>The final portion of our <em>execute()</em> method provides an early taste of integration with Liferay elements in XSF-based services. In this case the service leverages the fact that XSF will determine if the current user is logged into Liferay or not and if so will place a copy of the Liferay <em>User</em> object that represents the logged-in user into the context for subsequent access by services/commands. We will talk more about integration with the Liferay API in subsequent articles.</p> 
+<p>Listing 4 below provides two examples of URLs to invoke our service and the JSON that results from these respective invocations.</p> 
+<pre><code>    URL: http://localhost:8080/delegate/xsf/hello/world2/Bloggs/Joe?mname=Lee&quot; (not logged in)
+
+    JSON returned:
+        {
+          &quot;succeeded&quot;:true,
+          &quot;data&quot;: {&quot;first_name&quot;:&quot;Joe&quot;,
+                             &quot;middle_name&quot;:&quot;Lee&quot;,
+                             &quot;last_name&quot;:&quot;Bloggs&quot;,
+                             &quot;user_email&quot;:&quot;Not authenticated&quot;
+                            },
+          &quot;message&quot;:&quot;&quot;
+        }
+
+
+    URL: http://localhost:8080/delegate/xsf/hello/world2/Bloggs/Joe (after log in)
+
+    JSON returned:
+        {
+          &quot;succeeded&quot;:true,
+          &quot;data&quot;:{
+                             &quot;first_name&quot;:&quot;Joe&quot;,
+                             &quot;middle_name&quot;:&quot;NMN&quot;,
+                             &quot;last_name&quot;:&quot;Bloggs&quot;,
+                             &quot;user_email&quot;:&quot;xsf@xtivia.com&quot;
+                           },
+          &quot;message&quot;:&quot;&quot;
+        }
+</code></pre> 
+<p><strong>Listing 4, URLs and resulting JSON for HelloWorldCommand2</strong></p> 
+<p><strong>Hello World, Part 3</strong></p> 
+<p>Until now our examples have been based on simple GET requests where all inputs are supplied in the URI, and where the returned object is a standard Java Map class. In our final example we will demonstrate a POST based service and will use custom application objects to define the input as well as the output for the service. Our third example is provided in <em>com.xtivia.xsf.samples.HelloWorldCommand3,</em> shown below as Listing 5 and included in the XSF distribution. Note that in the interest of space we have not included the source listings for the <em>SampleInput</em> and <em>SampleOutput</em> classes but these are also available in the XSF distribution.</p> 
+<div class="highlight highlight-java">
+ <pre>    <span class="pl-k">package</span> <span class="pl-smi">com.xtivia.xsf.samples</span>;
+    [imports omitted <span class="pl-k">for</span> brevity]
+
+    @Component(<span class="pl-s"><span class="pl-pds">&quot;</span>helloCommand3<span class="pl-pds">&quot;</span></span>)
+    @Route(uri<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>/hello/world3/{id}<span class="pl-pds">&quot;</span></span>, method<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>POST<span class="pl-pds">&quot;</span></span>,
+           inputKey<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>inputData<span class="pl-pds">&quot;</span></span>, inputClass<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">&quot;</span>com.xtivia.xsf.samples.model.SampleInput<span class="pl-pds">&quot;</span></span>)
+
+    <span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">HelloWorldCommand3</span> <span class="pl-k">implements</span> <span class="pl-e">ICommand</span> {
+
+        <span class="pl-k">@Override</span>
+        <span class="pl-k">public</span> <span class="pl-smi">CommandResult</span> <span class="pl-en">execute</span>(<span class="pl-smi">IContext</span> <span class="pl-v">context</span>) {
+
+            <span class="pl-smi">SampleOutput</span> output <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">SampleOutput</span>();
+
+            <span class="pl-c">//inputs from path parameters</span>
+            <span class="pl-smi">String</span> id <span class="pl-k">=</span> context<span class="pl-k">.</span>find(<span class="pl-s"><span class="pl-pds">&quot;</span>id<span class="pl-pds">&quot;</span></span>);
+
+            <span class="pl-c">//inputs from posted JSON (marshalled to Java object)</span>
+            <span class="pl-smi">SampleInput</span> input <span class="pl-k">=</span> context<span class="pl-k">.</span>find(<span class="pl-s"><span class="pl-pds">&quot;</span>inputData<span class="pl-pds">&quot;</span></span>);
+            <span class="pl-k">if</span> (input <span class="pl-k">==</span> <span class="pl-c1">null</span>) {
+                <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-smi">CommandResult</span>()<span class="pl-k">.</span>setSucceeded(<span class="pl-c1">false</span>)<span class="pl-k">.</span>setMessage(<span class="pl-s"><span class="pl-pds">&quot;</span>No inputs were detected<span class="pl-pds">&quot;</span></span>);
+            }
+
+            output<span class="pl-k">.</span>setId(id);
+            output<span class="pl-k">.</span>setCount(input<span class="pl-k">.</span>getInputNumber()<span class="pl-k">+</span><span class="pl-c1">1</span>);
+            output<span class="pl-k">.</span>setText(input<span class="pl-k">.</span>getInputText()<span class="pl-k">.</span>toUpperCase());
+
+            <span class="pl-smi">Calendar</span> calendar <span class="pl-k">=</span> <span class="pl-smi">Calendar</span><span class="pl-k">.</span>getInstance();
+            calendar<span class="pl-k">.</span>setTime(input<span class="pl-k">.</span>getInputDate());
+            output<span class="pl-k">.</span>setDayOfWeek(calendar<span class="pl-k">.</span>get(<span class="pl-smi">Calendar</span><span class="pl-c1"><span class="pl-k">.</span>DAY_OF_WEEK</span>));
+            output<span class="pl-k">.</span>setMonth(calendar<span class="pl-k">.</span>get(<span class="pl-smi">Calendar</span><span class="pl-c1"><span class="pl-k">.</span>MONTH</span>));
+
+            <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-smi">CommandResult</span>()<span class="pl-k">.</span>setSucceeded(<span class="pl-c1">true</span>)<span class="pl-k">.</span>setData(output)<span class="pl-k">.</span>setMessage(<span class="pl-s"><span class="pl-pds">&quot;</span><span class="pl-pds">&quot;</span></span>);
+        }
+    }</pre>
+</div> 
+<p><strong>Listing 5, HelloWorldCommand3.java</strong></p> 
+<p>Note that in this example we add two additional attributes related to the marshalling of an inbound object in the @Route annotation, <em>inputKey</em> and <em>inputClass</em>. The former is used to instruct XSF what key to use when storing the inbound object in the context, and the latter defines what Java class should be used to marshal the inbound JSON string. XSF currently uses the Jackson library for all of its JSON marshalling (XSF in fact supports a pluggable architecture for marshalling; out-of-the-box it supports JSON but provides an extension mechanism for a implementing custom marshaller if, for example, you wanted to use XML instead of JSON.)</p> 
+<p>The Jackson library is quite flexible in terms of its marshalling support as we have seen in the previous examples where we returned a Map object and it was converted to JSON with no additional effort on our part. Embedded child objects and embedded collections are supported quite nicely by Jackson, however, we would recommend as a best practice that you attempt to use the &quot;value object&quot; pattern for objects used to marshal JSON to/from the client.</p> 
+<p>In our sample service/command we obtain the input object from the client, do some minor manipulations on fields from that object, and then set the modified values back into an object to be returned to the client. Note than in the case of the returned object we do not need to specify any additional metadata about the returned class. All reasonably straightforward value objects can be marshalled into JSON by interrogation of the class definition for the returned object.</p> 
+<p>Listing 6 below provides an example of a URL invocation that might be used to trigger the execution of this service, as well as a sample JSON input and the corresponding JSON output:</p> 
+<pre><code>    URL: http://localhost:8080/delegate/xsf/hello/world3/2742
+
+    Input JSON:
+        {
+          &quot;inputText&quot; : &quot;foobar&quot;,
+          &quot;inputNumber&quot; : 22,
+          &quot;inputDate&quot; : &quot;2015-01-06T20:23:38&quot;
+    }
+
+    Output JSON:
+    {
+          &quot;succeeded&quot;:true,
+          &quot;data&quot;: {&quot;id&quot;:&quot;2742&quot;,
+                             &quot;text&quot;:&quot;FOOBAR&quot;,
+                             &quot;month&quot;:0,
+                             &quot;dayOfWeek&quot;:3,
+                             &quot;count&quot;:23},
+          &quot;message&quot;:&quot;&quot;
+    }
+</code></pre> 
+<p><strong>Listing 6, URL and input/output JSON for HelloWorldCommand2</strong></p>
+</body>
+</html>
