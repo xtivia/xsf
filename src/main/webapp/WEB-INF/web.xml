@@ -8,16 +8,16 @@
     <servlet-name>delegate</servlet-name>
     <servlet-class>com.liferay.portal.kernel.servlet.PortalDelegateServlet</servlet-class>
     <init-param>
-      <javaee:param-name>servlet-class</javaee:param-name>
-      <javaee:param-value>org.springframework.web.servlet.DispatcherServlet</javaee:param-value>
+      <param-name>servlet-class</param-name>
+      <param-value>org.springframework.web.servlet.DispatcherServlet</param-value>
     </init-param>
     <init-param>
-      <javaee:param-name>sub-context</javaee:param-name>
-      <javaee:param-value>xsf</javaee:param-value>
+      <param-name>sub-context</param-name>
+      <param-value>xsf</param-value>
     </init-param>
     <init-param>
-      <javaee:param-name>contextConfigLocation</javaee:param-name>
-      <javaee:param-value>classpath:/META-INF/xsf-context.xml</javaee:param-value>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:/META-INF/xsf-context.xml</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
