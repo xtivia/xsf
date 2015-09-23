@@ -1,24 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-         xmlns="http://java.sun.com/xml/ns/j2ee" 
-         xmlns:javaee="http://java.sun.com/xml/ns/javaee" 
-         xmlns:web="http://java.sun.com/xml/ns/javaee" 
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/j2ee/web-app_3_0.xsd" version="3.0">
-  <servlet>
-    <servlet-name>delegate</servlet-name>
-    <servlet-class>com.liferay.portal.kernel.servlet.PortalDelegateServlet</servlet-class>
-    <init-param>
-      <param-name>servlet-class</param-name>
-      <param-value>org.springframework.web.servlet.DispatcherServlet</param-value>
-    </init-param>
-    <init-param>
-      <param-name>sub-context</param-name>
-      <param-value>xsf</param-value>
-    </init-param>
-    <init-param>
-      <param-name>contextConfigLocation</param-name>
-      <param-value>classpath:/META-INF/xsf-context.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+
+    <!-- For Liferay to invoke XSF, you need to have a servlet defined in web.xml that is the Liferay PortalDelegateServlet.
+         During hot deployment, Liferay will add the servlet info to it's own context so it can delegate work back to
+         your own web app context.
+
+         NOTE: This does not invoke your portlet in any way.
+     -->
+    <servlet>
+        <!-- Any name is fine. -->
+        <servlet-name>delegate</servlet-name>
+
+        <!-- Servlet must be this class for Liferay to forward requests. -->
+        <servlet-class>com.liferay.portal.kernel.servlet.PortalDelegateServlet</servlet-class>
+
+        <!-- This is the class that Liferay will instantiate to forward the requests to, must be the Spring DispatcherServlet class. -->
+        <init-param>
+            <param-name>servlet-class</param-name>
+            <param-value>org.springframework.web.servlet.DispatcherServlet</param-value>
+        </init-param>
+
+        <!-- This is the context that Liferay will forward requests to us from.  Requests to http://<portal hostname>/delegate/<sub context>
+             will be directed to the XSF servlet.  In the case below we have specified xsf, so for local testing you would use
+             http://localhost:8080/delegate/xsf to get to the XSF implementation. -->
+        <init-param>
+            <param-name>sub-context</param-name>
+            <param-value>xsf</param-value>
+        </init-param>
+
+        <!-- Defines the Spring context file(s) to load to be available for the XSF implementation.  The xsf-context.xml file specified
+             below initializes the XSF default framework.  You can add your own context files here or replace the xsf-context.xml file if
+             you populate all of the necessary XSF bean constructs. -->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:/META-INF/xsf-context.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Map any incoming requests directly to the servlet to your servlet for handling. -->
+    <servlet-mapping>
+        <servlet-name>delegate</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
 </web-app>
