@@ -36,7 +36,7 @@ Prior to performing a build you will also need to adjust the *liferay.version* p
 
 Optionally, you can also set the *liferay.home* property in your POM to point to your targeted Liferay server/bundle and then running *mvn install* will also move the created WAR into into your Liferay server's *deploy* directory (in addition to placing the file in your local Maven repository).
 
-To validate that your distribution of XSF is property installed and functional, set the two properties described above in the pom.xml file, then open a terminal session in the XSF distribution and type '**mvn deploy**'. You will see a number of messages in your terminal session as the sample application compiles and then deploys the XSF services portlet into your targeted Liferay installation.
+To validate that your distribution of XSF is property installed and functional, set the two properties described above in the pom.xml file, then open a terminal session in the XSF distribution and type '**mvn install**'. You will see a number of messages in your terminal session as the sample application compiles and then deploys the XSF services portlet into your targeted Liferay installation.
 
 If the build is successful you can then validate that the XSF samples are functional by opening up a browser and entering *http://localhost:8080/delegate/xsf/hello/world/bloggs/joe*. This will invoke one of the sample services provided with XSF and should result in the following JSON being returned to your browser:
 
