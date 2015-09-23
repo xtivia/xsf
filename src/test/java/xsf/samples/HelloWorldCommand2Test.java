@@ -14,7 +14,7 @@
  * details.
  */
 
-package com.xtivia.xsf.samples;
+package xsf.samples;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -26,6 +26,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import xsf.samples.HelloWorldCommand2;
 
 import com.liferay.portal.model.User;
 import com.xtivia.xsf.core.commands.CommandContext;
@@ -79,7 +81,7 @@ public class HelloWorldCommand2Test {
 		String userEmail = (String) results.get("user_email");
 		assertEquals(firstName,"Joe");
 		assertEquals(lastName,"Bloggs");
-		assertEquals(middleName,"NMN");
+		assertEquals(middleName,"Not Available");
 		assertEquals(userEmail, "Not authenticated");
 	}
 
@@ -133,7 +135,7 @@ public class HelloWorldCommand2Test {
 		String userEmail = (String) results.get("user_email");
 		assertEquals(firstName,"Joe");
 		assertEquals(lastName,"Bloggs");
-		assertEquals(middleName,"NMN");
+		assertEquals(middleName,"Not Available");
 		assertEquals(userEmail, "xsf@xtivia.com");
 	}
 }

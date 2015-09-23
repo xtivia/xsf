@@ -13,27 +13,31 @@
 	
 	<properties>
 	    <liferay.version>6.2.3</liferay.version>
-        <liferay.home>/home/mfreeman/apps/liferayce</liferay.home>
 	    <xsf.version>1.0.0-SNAPSHOT</xsf.version>
         <java.version>1.7</java.version>
-        <junit.version>4.5</junit.version>
-        <mockito.version>1.9.5</mockito.version>
-	    <spring.version>4.1.2.RELEASE</spring.version>
-	    <slf4j.version>1.7.7</slf4j.version>
+        <slf4j.version>1.7.7</slf4j.version>
+        <spring.version>4.1.2.RELEASE</spring.version>
 	    <jackson.version>1.9.11</jackson.version>
-	</properties>	
+        <junit.version>4.9</junit.version>
+        <mockito.version>1.9.5</mockito.version>
+        
+        <!-- set this property if you want automated deployment to a local Liferay during install phase-->
+        <!--liferay.home>/home/xsfuser/apps/liferayce</liferay.home-->
+	</properties>
 	
-    <repositories>
+	<repositories>
         <repository>
           <id>XSFRepo</id>
           <name>XSFRepo</name>
           <url>file://${project.basedir}/xsf_repo</url>
         </repository>
     </repositories> 
-      
+	   
 	<build>
         <finalName>xsf-sample-portlet</finalName>
 		<plugins>
+
+		    <!--compiler-->			
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.5</version>
@@ -43,42 +47,59 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
+
+			<!--resources-->			
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.5</version>
-				<configuration>
-					<encoding>UTF-8</encoding>
-				</configuration>
+				<configuration><encoding>UTF-8</encoding></configuration>
 			</plugin>
-            <!-- Disable standard Maven deployment in lieu of our Ant-based approach -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-			<!-- Custom Ant-based deploy/copy of WAR file-->
+			
+			<!-- The use of this plugin allows XSF to discover and auto-register (with Spring)
+			     your REST services at runtime. It generates a simple XML file used by XSF and places it
+			     in the META-INF folder of your WAR file classpath. We HIGHLY recommended its use, but if
+			     you need to remove it you will then need to perform required Spring configuration manually.-->
+			<plugin>
+               <groupId>org.reflections</groupId>
+               <artifactId>reflections-maven</artifactId>
+               <version>0.9.8</version>
+               <executions>
+                   <execution>
+                       <goals><goal>reflections</goal></goals>
+                       <phase>prepare-package</phase>
+                   </execution>
+               </executions>
+               <configuration>
+                  <destinations>${project.build.outputDirectory}/META-INF/xsf-reflections.xml</destinations>
+               </configuration>
+           </plugin>
+			
+			<!-- Use Ant to copy/deploy the artifact to a local Liferay installation
+			     (using hot deploy) during the install phase. Only executes when
+			     the property liferay.home is defined -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
                 <executions>
                     <execution>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <configuration>
-                            <tasks>
+                            <target if="liferay.home">
+                                <echo>Deploying WAR file to ${liferay.home}</echo>
                                 <copy todir="${liferay.home}/deploy">
                                     <fileset dir="${project.build.directory}">
                                         <include name="**/*.war"/>
                                     </fileset>
                                 </copy>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals><goal>run</goal></goals>
                     </execution>
                 </executions>
             </plugin>
+			   
 		</plugins>
+		
 	</build>
 
 	<dependencies>
@@ -96,7 +117,9 @@
 			<artifactId>portal-service</artifactId>
 			<version>${liferay.version}</version>
 			<scope>provided</scope>
-		</dependency>
+		</dependency>	
+		
+		<!--Portlet API -->
 		<dependency>
 			<groupId>javax.portlet</groupId>
 			<artifactId>portlet-api</artifactId>
@@ -104,11 +127,12 @@
 			<scope>provided</scope>
 		</dependency>
 		
-		<!-- J2EE -->
+		<!--Servlet API-->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.0.1</version>
+            <scope>provided</scope>
 		</dependency>
 		
 		<!-- Spring -->
@@ -157,21 +181,6 @@
 			<version>2.2</version>
 		</dependency>
 		
-		<!-- Apache Commons -->
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency>
-		
-		<!-- Logging -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- JSON -->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
@@ -184,6 +193,28 @@
 			<version>${jackson.version}</version>
 		</dependency>
 		
+		<!--SLF4J Logging-->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- Apache Commons -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		
+		<!-- JDOM -->
+		<dependency>
+	      <groupId>org.jdom</groupId>
+	      <artifactId>jdom</artifactId>
+	      <version>2.0.2</version>
+        </dependency>
+		
 		<!--Testing-->
 		<dependency>
             <groupId>junit</groupId>
@@ -192,12 +223,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+	      <groupId>org.slf4j</groupId>
+	      <artifactId>slf4j-simple</artifactId>
+	      <version>1.6.2</version>
+	      <scope>test</scope>
+        </dependency>
+        <dependency>
 	        <groupId>org.mockito</groupId>
 	        <artifactId>mockito-all</artifactId>
 	        <version>${mockito.version}</version>
 	        <scope>test</scope>
         </dependency>
-        
+		
 	</dependencies>
 	
 </project>

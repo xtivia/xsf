@@ -1,5 +1,9 @@
 ##Using the Xtivia Services Framework (XSF) to Create REST Services in Liferay
 
+**NOTE: This 1.0.0-SNAPSHOT version of XSF was updated on 09-21-15 to address some simplifications in the POM
+and in the authorizaton model. If needed, the prior version is available here under *Releases* as *July 2015 Early Release
+**
+
 XSF is a framework that Xtivia has created (and used for multiple client engagements) that enables the rapid development of custom REST services in Liferay.
 
 As we know the current trend in web application development is toward Single Page Applications (SPAs),where the majority of application functionality is implemented in JavaScript that executes in the browser. SPAs then communicate with REST APIs that act as proxies for a wide range of enterprise services and data stores. XSF provides a means by which we can rapidly develop these kinds of REST services in a Liferay environment.
@@ -28,7 +32,9 @@ The XSF distribution is a Maven project that builds a Liferay portlet applicatio
 
 (NOTE: as shipped the distribution refers to version 6.2.3 of the Maven artifacts for Liferay CE, so if you are using the most recent version of the Liferay CE server you will probably not need to perform this step as the required Maven artifacts will be automatically downloaded from Maven Central.)
 
-Prior to performing a build you will also need to adjust the *liferay.version* and *liferay.home* properties in the POM as appropriate for version of your installed Liferay Maven artifacts and server. Once you have configured these property values in the POM, then building new REST services is as simple as creating Java classes, annotating them with XSF-based annotations, and executing *mvn package* to create a WAR file. You can then move the created WAR into into your Liferay server's deploy directory by executing *mvn deploy*.
+Prior to performing a build you will also need to adjust the *liferay.version* property in the POM as appropriate for the version of your installed Liferay Maven artifacts and server. Once you have configured this property in the POM, then building new REST services is as simple as creating Java classes, annotating them with XSF-based annotations, and executing *mvn package* to create a WAR file. 
+
+Optionally, you can also set the *liferay.home* property in your POM to point to your targeted Liferay server/bundle and then running *mvn install* will also move the created WAR into into your Liferay server's *deploy* directory (in addition to placing the file in your local Maven repository).
 
 To validate that your distribution of XSF is property installed and functional, set the two properties described above in the pom.xml file, then open a terminal session in the XSF distribution and type '**mvn deploy**'. You will see a number of messages in your terminal session as the sample application compiles and then deploys the XSF services portlet into your targeted Liferay installation.
 
@@ -68,7 +74,6 @@ There are very few required changes needed to develop your own custom services i
 
 By default all service invocations use *[host:port]/delegate/xsf/....* style URLs. While the 'delegate' portion of the URL can only be changed by changing your Liferay configuration, you can easily map the *'xsf'* portion of this URL to something of your own choice by modifying line 19 in *src/main/webapp/WEB-INF/web.xml*.
 
-Additionally, when you create a package other than *com.xtivia.xsf.samples* to contain XSF services you will need to update the *base-package* attribute for the \<context:component-scan\> element in the Spring context file located at *src/main/webapp/WEB-INF/src/META-INF/xsf-context.xml* to includeyour own package(s). Note that *com.xtivia.xsf* MUST always be included in this entry in order for XSF to work properly.
 
 **Summary and Additional Features**
 
@@ -80,7 +85,6 @@ among other things, use of the Liferay permissions model for services. XSF also 
 - integration with Liferay logging
 - the use of  command "chains"
 - plugging in your own custom marshaller (e.g. to use XML instead of JSON) 
-- rapid development of prototype services using JavaScript
 - dynamic routing for cases where the mapping of URIs to commands is not known until runtime (i.e., dynamic dispatching). 
 
 Future updates may also add a portlet to the distribution for use in management and visualization

@@ -1,10 +1,9 @@
-package com.xtivia.xsf.samples;
+package xsf.samples;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
-import org.springframework.stereotype.Component;
 
 import com.liferay.portal.model.User;
 import com.xtivia.xsf.core.annotation.Route;
@@ -13,7 +12,6 @@ import com.xtivia.xsf.core.commands.ICommand;
 import com.xtivia.xsf.core.commands.IContext;
 import com.xtivia.xsf.liferay.ILiferayCommandKeys;
 
-@Component("helloCommand2")
 @Route(uri="/hello/world2/{last}/{first}", method="GET",authenticated=false)
 public class HelloWorldCommand2 implements ICommand {
 
@@ -32,7 +30,7 @@ public class HelloWorldCommand2 implements ICommand {
 		data.put("last_name", lastName);
 		
 		//inputs from query string
-		data.put("middle_name", "NMN");
+		data.put("middle_name", "Not Available");
 		String middleName = context.find("mname");
 		if (middleName != null) {
 			data.put("middle_name", middleName);
