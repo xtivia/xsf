@@ -4,7 +4,7 @@ XSF is a framework that Xtivia has created (and used for multiple client engagem
 
 ###Documentation
 
-The full documentation for XSF can be downloaded [here](https://raw.githubusercontent.com/xtivia/xsf/master/userguide.pdf). 
+The full documentation for XSF can be downloaded [here](https://raw.githubusercontent.com/xtivia/xsf/master/xsf_userguide.pdf). 
 
 ###Sample XSF Application
 
