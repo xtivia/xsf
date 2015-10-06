@@ -13,7 +13,7 @@
     </init-param>
     <init-param>
       <param-name>sub-context</param-name>
-      <param-value>xsf</param-value>
+      <param-value>xsfapp</param-value>
     </init-param>
     <init-param>
       <param-name>contextConfigLocation</param-name>

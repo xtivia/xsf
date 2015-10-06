@@ -9,32 +9,28 @@
 	<artifactId>xsf_sample_app</artifactId>
 	<packaging>war</packaging>
 	<name>XSF Sample Application</name>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	
 	<properties>
+        <java.version>1.6</java.version>
 	    <liferay.version>6.2.3</liferay.version>
-	    <xsf.version>1.0.0-SNAPSHOT</xsf.version>
-        <java.version>1.7</java.version>
-        <slf4j.version>1.7.7</slf4j.version>
-        <spring.version>4.1.2.RELEASE</spring.version>
+   	    <xsf.version>1.0.0</xsf.version> 
+	    <spring.version>3.0.7.RELEASE</spring.version>
+  	    <slf4j.version>1.7.7</slf4j.version>
+   	    <cglib.version>2.2</cglib.version>
+	    <asm.version>3.3</asm.version>
 	    <jackson.version>1.9.11</jackson.version>
+	    <jdom.version>1.1</jdom.version>       
         <junit.version>4.9</junit.version>
         <mockito.version>1.9.5</mockito.version>
         
-        <!-- set this property if you want automated deployment to a local Liferay during install phase-->
+        <!--set this property if you want automated deployment to a local Liferay during install phase-->
         <!--liferay.home>/home/xsfuser/apps/liferayce</liferay.home-->
+        
 	</properties>
-	
-	<repositories>
-        <repository>
-          <id>XSFRepo</id>
-          <name>XSFRepo</name>
-          <url>file://${project.basedir}/xsf_repo</url>
-        </repository>
-    </repositories> 
 	   
 	<build>
-        <finalName>xsf-sample-portlet</finalName>
+        <finalName>${project.artifactId}-portlet</finalName>
 		<plugins>
 
 		    <!--compiler-->			
@@ -54,7 +50,7 @@
 				<version>2.5</version>
 				<configuration><encoding>UTF-8</encoding></configuration>
 			</plugin>
-			
+						
 			<!-- The use of this plugin allows XSF to discover and auto-register (with Spring)
 			     your REST services at runtime. It generates a simple XML file used by XSF and places it
 			     in the META-INF folder of your WAR file classpath. We HIGHLY recommended its use, but if
@@ -136,10 +132,24 @@
 		</dependency>
 		
 		<!-- Spring -->
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>${spring.version}</version>
+            <exclusions>
+                <!-- Exclude Commons Logging in favor of SLF4j -->
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -152,34 +162,116 @@
 					<artifactId>commons-logging</artifactId>
 				 </exclusion>
 			</exclusions>
+            <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 			<version>${spring.version}</version>
+            <scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
+            <scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc-portlet</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc-portlet</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
 		<!-- cglib/asm -->
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
-			<version>3.1</version>
+			<version>${cglib.version}</version>
+            <scope>provided</scope>
+		</dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>${asm.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-util</artifactId>
+            <version>${asm.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-tree</artifactId>
+            <version>${asm.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-analysis</artifactId>
+            <version>${asm.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>asm</groupId>
+            <artifactId>asm-xml</artifactId>
+            <version>${asm.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+		<!-- Apache Commons -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+            <scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>asm</groupId>
-			<artifactId>asm-all</artifactId>
-			<version>2.2</version>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.1</version>
+            <scope>provided</scope>
 		</dependency>
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+            <scope>provided</scope>
+        </dependency>
 		
 		<!-- JSON -->
 		<dependency>
@@ -192,29 +284,15 @@
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
-		
-		<!--SLF4J Logging-->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<!-- Apache Commons -->
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-		</dependency>
-		
-		<!-- JDOM -->
-		<dependency>
-	      <groupId>org.jdom</groupId>
-	      <artifactId>jdom</artifactId>
-	      <version>2.0.2</version>
+        
+        <!-- JDOM -->
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>1.1</version>
+            <scope>provided</scope>
         </dependency>
-		
+        				
 		<!--Testing-->
 		<dependency>
             <groupId>junit</groupId>

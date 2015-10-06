@@ -180,11 +180,11 @@ public class PeopleService {
 	// some sample data for our demo
     private static List<Person> __people = new ArrayList<Person> ();
     static {
-    	__people.add(new Person(1, "Rex","Petersen","Missouri"));
-       	__people.add(new Person(2, "Trevor","Burkholder","Ohio"));
-       	__people.add(new Person(3, "Mike","Freeman","Texas"));
-       	__people.add(new Person(4, "Todd","Malvoso","South Carolina"));
-       	__people.add(new Person(5, "Nir","Gyn","New York"));
-       	__people.add(new Person(6, "Dennis","Robinson","Colorado"));
+    	__people.add(new Person(1, "Daffy","Duck","Missouri"));
+       	__people.add(new Person(2, "Minnie","Mouse","Ohio"));
+       	__people.add(new Person(3, "Elmer","Fudd","Texas"));
+       	__people.add(new Person(4, "Foghorn","Leghorn","South Carolina"));
+       	__people.add(new Person(5, "Mother","Goose","New York"));
+       	__people.add(new Person(6, "Bugs","Bunny","Colorado"));
     }
 }
