@@ -9,22 +9,21 @@ import com.xtivia.xsf.core.annotation.Route;
 import com.xtivia.xsf.core.commands.CommandResult;
 import com.xtivia.xsf.core.commands.ICommand;
 import com.xtivia.xsf.core.commands.IContext;
+import com.xtivia.xsf.core.web.Xsf;
 
 /*
   Demonstrates how to create multiple REST endpoints in a single Java source file
-  via the use of public static inner classes. Provides a sample in-memory CRUD
+  via the use of annotated methods. Provides a sample in-memory CRUD
   operations for a list of people.
   
   Everything needed to implement the entire set of CRUD actions is included in this
   single source file including the value object used for marshalling data to/from the
-  client, the endpoint classes, as well as utility functions used by the classes.
+  client, the endpoint methods, as well as utility functions used by the endpoints/routes.
   
-  Note that these are fully independent classes (unlike non-static inner classes). 
  */
 
-public class PeopleService {
-	
-	private static final String PEOPLE_URI = "/people";
+@Route(uri="/people")
+public class PeopleService implements ICommand {
 	
 	public static class Person {
 		
@@ -44,106 +43,96 @@ public class PeopleService {
 	}
 	
 	// return all people
-	@Route(uri=PEOPLE_URI, method="GET", authenticated=false)
-	public static class GetPeople implements ICommand {
-		@Override
-		public CommandResult execute(IContext context) {
-			return new CommandResult().setSucceeded(true)
-					                  .setData(__people)
-					                  .setMessage("");
-			
-		}
+	@Route(uri="", method="GET", authenticated=false)
+	public CommandResult getAllPeople(IContext context) {
+		return new CommandResult().setSucceeded(true)
+				                  .setData(__people)
+				                  .setMessage("");
 	}
 
 	// return a single person based on supplied ID
-	@Route(uri=PEOPLE_URI+"/{id}", method="GET", authenticated=false)	
-	public static class GetPerson implements ICommand {
-		@Override
-		public CommandResult execute(IContext context) {
-			CommandResult cr = new CommandResult().setSucceeded(false).setMessage("General error");
-			try {
-			  Person person = findById(getInputId(context));
-			  if (person != null) {
-				  cr.setSucceeded(true).setData(person).setMessage("");
-			  } else {
-				  cr.setMessage("Requested person not found");
-			  }
-			} catch (Exception e) {
-				cr.setMessage(e.getMessage());
-			}
-			return cr;
+	@Route(uri="/{id}", method="GET", authenticated=false)	
+	public CommandResult getPerson(IContext context) {
+		CommandResult cr = new CommandResult().setSucceeded(false).setMessage("General error");
+		try {
+		  Person person = findById(getInputId(context));
+		  if (person != null) {
+			  cr.setSucceeded(true).setData(person).setMessage("");
+		  } else {
+			  cr.setMessage("Requested person not found");
+		  }
+		} catch (Exception e) {
+			cr.setMessage(e.getMessage());
 		}
+		return cr;
 	}
 		
     // add a new person
-	@Route(uri=PEOPLE_URI, method="POST", authenticated=false,inputClass="xsf.samples.people.PeopleService$Person",inputKey="person")	
-	public static class AddPerson implements ICommand {
-		@Override
-		public CommandResult execute(IContext context) {	
-			CommandResult cr = new CommandResult().setSucceeded(false).setMessage("General error");
-			try {
-			  Person newPerson = getInputPerson(context);
-			  validatePerson(newPerson);
-			  // generate a trivial ID based on epoch time
-			  newPerson.id = new java.util.Date().getTime();
-			  __people.add(newPerson);
-			  cr.setSucceeded(true).setData(newPerson).setMessage("");
+	@Route(uri="", method="POST", authenticated=false,
+		   inputClass="xsf.samples.people.PeopleService$Person",inputKey="person")	
+	public CommandResult addPerson(IContext context) {	
+		CommandResult cr = new CommandResult().setSucceeded(false).setMessage("General error");
+		try {
+		  Person newPerson = getInputPerson(context);
+		  validatePerson(newPerson);
+		  // generate a trivial ID based on epoch time
+		  newPerson.id = new java.util.Date().getTime();
+		  __people.add(newPerson);
+		  cr.setSucceeded(true).setData(newPerson).setMessage("");
 
-			} catch (Exception e) {
-				cr.setMessage(e.getMessage());
-			}
-			return cr;
+		} catch (Exception e) {
+			cr.setMessage(e.getMessage());
 		}
-	}
+		return cr;
+     }
 	
 	// update a single person based on supplied ID
-	@Route(uri=PEOPLE_URI+"/{id}", method="PUT", authenticated=false,inputClass="xsf.samples.people.PeopleService$Person",inputKey="person")	
-	public static class UpdatePerson implements ICommand {
-		@Override
-		public CommandResult execute(IContext context) {
-			CommandResult cr = new CommandResult().setSucceeded(false).setMessage("General error");
-			try {
-			  Person oldPerson = findById(getInputId(context));
-			  if (oldPerson != null) {
-				  Person newPerson = getInputPerson(context);
-				  validatePerson(newPerson);
-				  oldPerson.firstName = newPerson.firstName;
-				  oldPerson.lastName = newPerson.lastName;
-				  oldPerson.location = newPerson.location;
-				  cr.setSucceeded(true).setMessage("");
-			  } else {
-				  cr.setMessage("Requested to update non-existing person");
-			  }
-			} catch (Exception e) {
-				cr.setMessage(e.getMessage());
-			}
-			return cr;
+	@Route(uri="/{id}", method="PUT", authenticated=false,
+		   inputClass="xsf.samples.people.PeopleService$Person",inputKey="person")	
+	public CommandResult updatePerson(IContext context) {
+		CommandResult cr = new CommandResult().setSucceeded(false).setMessage("General error");
+		try {
+		  Person oldPerson = findById(getInputId(context));
+		  if (oldPerson != null) {
+			  Person newPerson = getInputPerson(context);
+			  validatePerson(newPerson);
+			  oldPerson.firstName = newPerson.firstName;
+			  oldPerson.lastName = newPerson.lastName;
+			  oldPerson.location = newPerson.location;
+			  cr.setSucceeded(true).setMessage("");
+		  } else {
+			  cr.setMessage("Requested to update non-existing person");
+		  }
+		} catch (Exception e) {
+			cr.setMessage(e.getMessage());
 		}
+		return cr;
 	}
 	
 	// delete a single person based on supplied ID
-	@Route(uri=PEOPLE_URI+"/{id}", method="DELETE", authenticated=false)	
-	public static class DeletePerson implements ICommand {
-		@Override
-		public CommandResult execute(IContext context) {	
-			CommandResult cr = new CommandResult().setSucceeded(false).setMessage("General error");
-			try {
-			  long id = getInputId(context);
-			  int ndx = 0;
-			  for (Person person : __people) {
-				  if (person.id == id) {
-					  __people.remove(ndx);
-					  cr.setSucceeded(true).setMessage("");
-				  } else {
-					  ndx++;
-				  }
+	@Route(uri="/{id}", method="DELETE", authenticated=false)	
+	public CommandResult deletePerson(IContext context) {	
+		CommandResult cr = new CommandResult().setSucceeded(false).setMessage("General error");
+		try {
+		  long id = getInputId(context);
+		  int ndx = 0;
+		  for (Person person : __people) {
+			  if (person.id == id) {
+				  __people.remove(ndx);
+				  cr.setSucceeded(true).setMessage("");
+				  break;
+			  } else {
+				  ndx++;
 			  }
-			  cr.setMessage("Requested to add person with duplicate ID");
-			} catch (Exception e) {
-				cr.setMessage(e.getMessage());
-			}
-			return cr;
+		  }
+		} catch (Exception e) {
+			cr.setMessage(e.getMessage());
 		}
+		return cr;
+	}
+	
+	public CommandResult execute(IContext context) {
+		return Xsf.dispatch(this, context);
 	}
 	
 	// 

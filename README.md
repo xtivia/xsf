@@ -1,4 +1,10 @@
 ##Using the Xtivia Services Framework (XSF) to Create REST Services in Liferay
+Version 1.1.0 Released 27 Oct 2015
+
+Version 1.1.0 adds the following features:
+(1) Support for @Route on methods in addition to classes
+(2) Moves Jackson version to 2.6.3
+
 
 XSF is a framework that Xtivia has created (and used for multiple client engagements) that enables the rapid development of custom REST services in Liferay. REST services developed using XSF are coded in a fashion similar to JAX-RS or Jersey but can take advantages of Liferay features such as roles/permissions.
 

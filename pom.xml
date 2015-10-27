@@ -9,17 +9,17 @@
 	<artifactId>xsf_sample_app</artifactId>
 	<packaging>war</packaging>
 	<name>XSF Sample Application</name>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	
 	<properties>
         <java.version>1.6</java.version>
 	    <liferay.version>6.2.3</liferay.version>
-   	    <xsf.version>1.0.0</xsf.version> 
+   	    <xsf.version>1.1.0</xsf.version> 
 	    <spring.version>3.0.7.RELEASE</spring.version>
   	    <slf4j.version>1.7.7</slf4j.version>
    	    <cglib.version>2.2</cglib.version>
 	    <asm.version>3.3</asm.version>
-	    <jackson.version>1.9.11</jackson.version>
+	    <jackson.version>2.6.3</jackson.version>
 	    <jdom.version>1.1</jdom.version>       
         <junit.version>4.9</junit.version>
         <mockito.version>1.9.5</mockito.version>
@@ -275,13 +275,18 @@
 		
 		<!-- JSON -->
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
         
