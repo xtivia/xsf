@@ -1,9 +1,12 @@
 build.xml
+build
+gradle
 bin
 .project
 .classpath
 .metadata
 .settings
+.gradle
 liferay_tests
 pom_archetype.xml
 generate.archetype.properties
@@ -15,6 +18,3 @@ target/
 /nb-configuration.xml
 *.iml
 .idea
-.gradle
-gradle
-build

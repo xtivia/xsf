@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+	      http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+
+    <display-name>Xtivia Services Framework</display-name>
+
+    <!-- For Liferay to invoke XSF, you need to have a servlet defined in web.xml that is the Liferay PortalDelegateServlet.
+         During hot deployment, Liferay will add the servlet info to it's own context so it can delegate work back to
+         your own web app context.
+
+         NOTE: This does not invoke your portlet in any way.
+     -->
+
+    <servlet>
+        <!-- You can use any servlet name you want. -->
+        <servlet-name>HelloWeb</servlet-name>
+        <!-- This is the class that must be used. -->
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+
+        <!-- The sub-context param is what context Liferay will listen on for you, so http://<your hostname>/delegate/<sub-context> will come to you. -->
+        <init-param>
+            <param-name>sub-context</param-name>
+            <param-value>xsf</param-value>
+        </init-param>
+
+        <!-- Define the context config location for spring. -->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:/META-INF/xsf-context.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Map any incoming requests directly to the servlet to your servlet for handling. -->
+    <servlet-mapping>
+        <servlet-name>HelloWeb</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+</web-app>
