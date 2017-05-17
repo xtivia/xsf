@@ -1,4 +1,4 @@
-##Using the Xtivia Services Framework (XSF) to Create REST Services in Liferay
+##Using the Xtivia Services Framework (XSF) to Create REST Services in Liferay##
 Version 1.1.0 Released 27 Oct 2015
 
 Version 1.1.0 adds the following features:
