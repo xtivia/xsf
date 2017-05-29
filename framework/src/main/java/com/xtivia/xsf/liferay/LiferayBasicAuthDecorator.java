@@ -24,6 +24,10 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.liferay.portal.model.User;
+import com.liferay.portal.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.security.permission.PermissionThreadLocal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,6 +176,7 @@ public class LiferayBasicAuthDecorator implements IContextDecorator {
 						
 						context.put(ILiferayCommandKeys.LIFERAY_USER,
 								    UserLocalServiceUtil.getUserByEmailAddress(company.getCompanyId(), login));
+						setUpPermissionThreadLocal(context);
 					}
 				} else {
 					int authResult = UserLocalServiceUtil.
@@ -182,11 +187,21 @@ public class LiferayBasicAuthDecorator implements IContextDecorator {
 						
 						context.put(ILiferayCommandKeys.LIFERAY_USER,
 								    UserLocalServiceUtil.getUserByScreenName(company.getCompanyId(), login));
+						setUpPermissionThreadLocal(context);
 					}
 				}
 				
 			} catch (Exception e) {_logger.error("Exception in BASIC auth handler",e);}				
 		}
 	}
-	
+
+	private static void setUpPermissionThreadLocal(IContext context) throws Exception {
+		User user = (User) context.get(ILiferayCommandKeys.LIFERAY_USER);
+		if (user != null) {
+			PermissionThreadLocal.setPermissionChecker(PermissionCheckerFactoryUtil.create(user));
+			PrincipalThreadLocal.setName(user.getUserId());
+		}
+	}
+
+
 }

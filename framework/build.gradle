@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 group = 'com.xtivia.tools'
 version = '1.1.0'
